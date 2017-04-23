@@ -1,0 +1,21 @@
+(use-modules (minikanren records))
+(use-modules (srfi srfi-64))
+
+(test-begin "records kons")
+(define-record kons (kar get-kar) (kdr get-kdr))
+(test-equal (get-kar (kons 1 2))
+  1)
+(test-equal (get-kdr (kons 1 2))
+  2)
+(test-equal (explode-record (kons 1 2))
+  '(kons 1 2))
+(test-equal (explode-record (apply-record-constructor (kons 1 2) (list 3 4)))
+  '(kons 3 4))
+(test-end "records kons")
+
+(test-begin "records different")
+(define-record record-x)
+(define-record record-y)
+(test-assert (not (equal? (record-x) (record-y))))
+(test-end "records different")
+

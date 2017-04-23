@@ -1,0 +1,15 @@
+(define-module (minikanren examples peano)
+  #:export (peano peano/dfs))
+(use-modules (minikanren language))
+
+(define (peano n)
+  (conde ((== n 'z))
+	 ((fresh (m)
+	    (== n `(s ,m))
+	    (peano m)))))
+
+(define (peano/dfs n)
+  (conde/dfs ((== n 'z))
+	     ((fresh/dfs (m)
+	        (== n `(s ,m))
+		(peano/dfs m)))))
