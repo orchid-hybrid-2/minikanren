@@ -1,5 +1,5 @@
 (define-module (minikanren examples four-color)
-  #:export (do-australia do-canada do-america))
+  #:export (do-australia do-canada do-america timing-test))
 (use-modules (minikanren language)
 	     (minikanren examples lists)
 	     
@@ -89,14 +89,14 @@
       (assoco y table y-color)
       (=/= x-color y-color))))
 
-(define (my-mapo p l i)
-  ;; This has to be done in a depth first search!
-  ;; (display (make-list i '-)) (newline)
-  (conde/dfs ((== l '()))
-	     ((fresh/dfs (car cdr)
-		(== l `(,car . ,cdr))
-		(p car)
-		(my-mapo p cdr (+ i 1))))))
+;; (define (my-mapo p l i)
+;;   ;; This has to be done in a depth first search!
+;;   ;; (display (make-list i '-)) (newline)
+;;   (conde/dfs ((== l '()))
+;; 	     ((fresh (car cdr)
+;; 		(== l `(,car . ,cdr))
+;; 		(p car)
+;; 		(my-mapo p cdr (+ i 1))))))
 
 (define (color states edges colors)
   ;; This is a simple constrained generate and test solver
@@ -107,21 +107,24 @@
     (make-assoc-tableo states colors table)
     
     ;; make sure each color is different to neighbours
-    (mapo (different-colors table) edges)
+    (mapo (different-colors table) edges (== 0 0))
     
     ;; brute force search for a valid coloring
-    (my-mapo coloro colors 0)))
+    (mapo coloro colors (== 0 0))))
 
 (define (do-australia)
   (let ((nodes (graph-good-ordering australia:nodes australia:edges)))
+    (display nodes)(newline)
     (run^ 1 (lambda (q) (color nodes australia:edges q)))))
 
 (define (do-canada)
   (let ((nodes (graph-good-ordering canada:nodes canada:edges)))
+    (display nodes)(newline)
     (run^ 1 (lambda (q) (color nodes canada:edges q)))))
 
 (define (do-america)
   (let ((nodes (graph-good-ordering america:nodes america:edges)))
+    (display nodes)(newline)
     (run^ 1 (lambda (q) (color nodes america:edges q)))))
 
 
@@ -156,3 +159,23 @@
 ;; $26 = 15
 ;; scheme@(minikanren examples four-color)> (timing-test 16)
 ;; $27 = 33
+
+;; Australia 0 seconds
+;; Canada: 2 seconds
+;; America: INFINITY seconds
+
+
+;; with dfs
+
+;; scheme@(guile-user)> (timing-test 40)
+;; $2 = 1
+;; scheme@(guile-user)> (timing-test 50)
+;; $3 = 2
+;; scheme@(guile-user)> (timing-test 60)
+;; $4 = 3
+;; scheme@(guile-user)> (timing-test 70)
+;; $5 = 5
+
+;; Australia 0 seconds
+;; Canada: 0 seconds
+;; America: (((red green blue red green green blue blue green red yellow green red blue blue green blue green red yellow red red green red green red red green blue green blue yellow red red red yellow blue red red blue red blue red blue blue yellow green red blue yellow blue) where)) 7 seconds

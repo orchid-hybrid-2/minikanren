@@ -51,7 +51,7 @@
    ((null? $1) $2)
    ((procedure? $1) ;; Switch for fairness, give every branch a chance
     (lambda () (mplus $2 ($1))))
-   (else (cons (car $1) (mplus (cdr $1) $2)))))
+   (else (cons (car $1) (mplus (cdr $1) (lambda () $2))))))
 
 (define (mplus/dfs $1 $2)
   (cond
@@ -67,7 +67,9 @@
   (cond
    ((null? $) mzero)
    ((procedure? $) (lambda () (mbind ($) g)))
-   (else (mplus (g (car $)) (mbind (cdr $) g)))))
+   (else (mplus (g (car $)) (lambda ()
+			      (mbind (cdr $) g))))))
+;(else (mplus (g (car $)) (mbind (cdr $) g)))))
 
 (define (mbind/dfs $ g)
   (cond

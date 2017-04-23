@@ -37,12 +37,22 @@
 	      (== l-x `(,car . ,cdr-x))
 	      (selecto x cdr cdr-x))))))
 
-(define (mapo p l)
-  (conde ((== l '()))
-	 ((fresh (car cdr)
-	    (== l `(,car . ,cdr))
-	    (p car)
-	    (mapo p cdr)))))
+;; (define (mapo p l)
+;;   (conde ((== l '()))
+;; 	 ((fresh (car cdr)
+;; 	    (== l `(,car . ,cdr))
+;; 	    (p car)
+;; 	    (mapo p cdr)))))
+
+(define (mapo p l acc)
+  (conde
+   [(== l '())
+    acc]
+   [(fresh (car cdr)
+	   (== l `(,car . ,cdr))
+	   (mapo p cdr (fresh ()
+			      acc
+			      (p car))))]))
 
 (define (assoco key table value)
   (fresh (car table-cdr)
